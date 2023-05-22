@@ -8,11 +8,11 @@ import java.util.Scanner;
 
 public class Deck {
 	
-	ArrayList<String> deck = new ArrayList<String>();
+	public ArrayList<String> deck = new ArrayList<String>();
+	int cardsPlayed = 0;
 	public Deck() {
 		getFile();
 		shuffleDeck();
-		System.out.println(deck);
 	}
 	
 	public void getFile() {
@@ -29,8 +29,14 @@ public class Deck {
 	public void shuffleDeck() {
 		Collections.shuffle(deck);
 	}
-	public static void main(String[]args) {
-		new Deck();
+	public String getCard() {
+		if (cardsPlayed >= 51) {
+			shuffleDeck();
+			cardsPlayed = 0;
+		}
+		String card = deck.get(cardsPlayed);
+		cardsPlayed++;
+		return card;
 	}
 }
 
