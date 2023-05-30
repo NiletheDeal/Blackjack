@@ -116,5 +116,51 @@ public class Main extends Deck{
 		}
 		return wordCards;
 	}
+	private void checkBlackjack() {
+		if (playerValue == 21 && dealerValue < playerValue) {
+			playerWins++;
+			System.out.println("The Player got BlackJack");
+			//reset
+		}
+		else if (dealerValue == 21 && dealerValue > playerValue) {
+			dealerWins++;
+			System.out.println("The Dealer got BlackJack");
+			//reset
+		}
+		else if (dealerValue == 21 && playerValue == 21) {
+			System.out.println("Both the Dealer and Player got Blackjack and its a Tie!");
+			//reset
+		}
+	}
+	private void checkWin() {
+		if (playerValue > 21) {//if player busts
+			dealerWins++;
+			System.out.println("The Dealer Won!");
+			//reset
+		}
+		else if (dealerValue > 21) {//if dealer busts and player hasn't
+			playerWins++;
+			System.out.println("The Player Won!");
+			//reset
+		}
+		else if (playerValue > dealerValue) {//if player is above dealer and neither has busted 
+			playerWins++;
+			System.out.println("The Player Won!");
+			//reset
+		}
+		else if (playerValue < dealerValue) {//if dealer is above player and neither has busted
+			dealerWins++;
+			System.out.println("The Dealer Won!");
+			//reset
+		}
+		else if (dealerValue == playerValue) {
+			System.out.println("It was a tie!");
+			//reset
+		}
+	}
+	private void printWins() {
+		System.out.println("Dealer Wins: " + dealerWins);
+		System.out.println("Player Wins: " + playerWins);
+	}
 
 }
