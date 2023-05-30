@@ -9,6 +9,7 @@ public class Main extends Deck{
 	int cardsPlayed;
 	ArrayList<String> playerHand = new ArrayList<String>();
 	ArrayList<String> dealerHand = new ArrayList<String>();
+	ArrayList<String> wordCards = new ArrayList<String>();
 	int playerValue = 0;
 	int dealerValue = 0;
 	Deck theDeck = new Deck();
@@ -35,8 +36,10 @@ public class Main extends Deck{
 		Start();
 		Scanner sc = new Scanner(System.in);
 		while (playing == true) {
-			System.out.println("Dealers card: " + dealerHand.get(0));
-			System.out.println("Your hand: " + playerHand);
+			System.out.println("Dealers card: " + toWords(dealerHand));
+			wordCards.clear();
+			System.out.println("Your hand: " + toWords(playerHand));
+			wordCards.clear();
 			System.out.println("What do you want to do? (hit, stand, quit)");
 			String input = sc.nextLine();
 			if (input.equals("hit")) {
@@ -110,5 +113,47 @@ public class Main extends Deck{
 		}
 		
 	}
-
+	
+	public ArrayList toWords(ArrayList<String> Cards) {
+		for (int a = 0; a < Cards.size(); a++) {
+			String card = (String) Cards.get(a);
+			//suite is char at 2, either S, C, D, H
+			String Suite = String.valueOf(card.charAt(1));
+			if (Suite.equals("0")) {
+				Suite =  String.valueOf(card.charAt(2));
+			}
+			if (Suite.equals("S")) {
+				Suite = "Spades";
+			}
+			else if (Suite.equals("C")) {
+				Suite = "Clubs";
+			}
+			else if (Suite.equals("D")) {
+				Suite = "Diamonds";
+			}
+			else if (Suite.equals("H")) {
+				Suite = "Hearts";
+			}
+			//value is int at 1, from 2 - 10
+			String Value = String.valueOf(card.charAt(0));
+			if (Value.equals("1")) {
+				Value = "10";
+			} 
+			else if (Value.equals("a")) {
+				Value = "Ace";
+			}
+			else if (Value.equals("j")) {
+				Value = "Jack";
+			}
+			else if (Value.equals("k")) {
+				Value = "King";
+			}
+			else if (Value.equals("q")) {
+				Value = "Queen";
+			}
+			card = Value + " of " + Suite;
+			wordCards.add(card);
+		}
+		return wordCards;
+	}
 }
