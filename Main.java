@@ -31,7 +31,6 @@ public class Main extends Deck{
 		playerHand.add(theDeck.getCard());
 		dealerHand.add(theDeck.getCard());
 	}
-	//Play
 	public Main() {
 		Start();
 		Scanner sc = new Scanner(System.in);
@@ -42,6 +41,7 @@ public class Main extends Deck{
 			String input = sc.nextLine();
 			if (input.equals("hit")) {
 				playerHand.add(theDeck.getCard());
+				getTotal(playerHand);
 				//printHand();
 				//checkWin();
 			}
@@ -62,11 +62,53 @@ public class Main extends Deck{
 		Boolean dealerTurn = true;
 		while (dealerTurn == true) {
 			dealerHand.add(theDeck.getCard());
-			/*if(dealerValue > 16) {
+			getTotal(dealerHand);
+			if(dealerValue > 16) {
 				//checkWin();
 				dealerTurn = false;
-			}*/
+			}
 		}
+	}
+	private void getTotal(ArrayList<String> array) {//10, k, q J, A
+		dealerValue = 0;
+		playerValue = 0;
+		for (int a = 0; a < array.size(); a++) {
+			if(Character.isDigit(array.get(a).charAt(0)) && array.get(a).charAt(0) != '1') {
+				if(array == playerHand) {
+					playerValue += (int)(array.get(a).charAt(0));
+				}
+				if(array == dealerHand) {
+					dealerValue += (int)(array.get(a).charAt(0));
+				}
+			}
+			if (array.get(a).charAt(0) == 'k' || array.get(a).charAt(0) == 'q' || array.get(a).charAt(0) == 'j'|| array.get(a).charAt(0) == '1') {
+				if (array == playerHand) {
+					playerValue += 10;
+				}
+				if (array == dealerHand) {
+					dealerValue += 10;
+				}
+			}
+			if (array.get(a).charAt(0) == a) {//If you have ace checks whether it is worth 11 or 1 depending on busting on 11.
+				if (array == dealerHand) {
+					if ((dealerValue + 11) > 21) {
+						dealerValue += 1;
+					}
+					else {
+						dealerValue += 11;
+					}
+				}
+				if (array == playerHand) {
+					if ((playerValue + 11) > 21) {
+						playerValue += 1;
+					}
+					else {
+						playerValue += 11;
+					}
+				}
+			}
+		}
+		
 	}
 
 }
