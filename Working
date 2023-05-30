@@ -6,52 +6,75 @@ import java.util.Scanner;
 public class Main extends Deck{
 	
 	Boolean playing = true;
+	Boolean playerTurn = true;
 	int cardsPlayed;
 	ArrayList<String> playerHand = new ArrayList<String>();
 	ArrayList<String> dealerHand = new ArrayList<String>();
 	ArrayList<String> wordCards = new ArrayList<String>();
+	ArrayList<String> dealerCards = new ArrayList<String>();
 	int playerValue = 0;
 	int dealerValue = 0;
+	int playerWins = 0;
+	int dealerWins = 0;
+	boolean blackJack = false;
 	Deck theDeck = new Deck();
 	
 	public static void main(String[] args) {
 		new Main();
 	}
 	
-	public void Start() {
+	private void Start() {
 		System.out.println("BLACKJACK RULES:");
 		System.out.println("-Each player is dealt 2 cards. The dealer is dealt 2 cards with one face-up and one face-down.");
 		System.out.println("-Cards are equal to their value with face cards being 10 and an Ace being 1 or 11");
 		System.out.println("-The players' cards are added up for their total.");
-		System.out.println("-Players “Hit” to gain another card from the deck. Players “Stay” to keep their current card total.");
+		System.out.println("-Players “Hit” to gain another card from the deck. Players “Stand” to keep their current card total.");
 		System.out.println("-Dealer “Hits” until they equal or exceed 17.");
 		System.out.println("-The goal is to have a higher card total than the dealer without going over 21.");
 		System.out.println("-If the player total equals the dealer total, it is a “Push” and the hand ends.");
-		//Deal
+	}
+	
+	private void Deal() {
 		playerHand.add(theDeck.getCard());
 		dealerHand.add(theDeck.getCard());
 		playerHand.add(theDeck.getCard());
 		dealerHand.add(theDeck.getCard());
 	}
 	
-	//Play
 	public Main() {
 		Start();
+		Deal();
 		Scanner sc = new Scanner(System.in);
 		while (playing == true) {
 			System.out.println("Dealers card: " + toWords(dealerHand));
+			dealerCards.clear();
 			wordCards.clear();
+			getTotal(dealerHand);
+			System.out.println(dealerValue);
 			System.out.println("Your hand: " + toWords(playerHand));
 			wordCards.clear();
+			getTotal(playerHand);
+			System.out.println(playerValue);
+			checkBlackjack();
 			System.out.println("What do you want to do? (hit, stand, quit)");
 			String input = sc.nextLine();
 			if (input.equals("hit")) {
 				playerHand.add(theDeck.getCard());
-				//printHand();
-				//checkWin();
+				getTotal(playerHand);
+				checkWin();
 			}
 			else if(input.equals("stand")) {
+				playerTurn = false;
 				dealerPlay();
+				System.out.println("Dealers cards: " + toWords(dealerHand));
+				System.out.println(dealerValue);
+				checkWin();
+				System.out.println("Do you want to play again? (y or n)");
+				String again1 = sc.nextLine();
+				if (again1.equals("n")) {
+					playing = false;
+				}
+				reset();
 			}
 			else if (input.equals("quit")) {
 				System.exit(0);
@@ -60,18 +83,114 @@ public class Main extends Deck{
 			}
 		}
 	}
-	//Check Win
-	//Check Tie
 
 	private void dealerPlay() {
 		Boolean dealerTurn = true;
 		while (dealerTurn == true) {
+			if (dealerValue <= 16) {
 			dealerHand.add(theDeck.getCard());
-			/*if(dealerValue > 16) {
-				checkWin();
+			getTotal(dealerHand);
+			} else {
 				dealerTurn = false;
-			}*/
+			}
 		}
+	}
+	
+	private void getTotal(ArrayList<String> array) {
+		dealerValue = 0;
+		playerValue = 0;
+		for (int a = 0; a < array.size(); a++) {
+			if(Character.isDigit(array.get(a).charAt(0)) && array.get(a).charAt(0) != '1') {
+				if(array == playerHand) {
+					playerValue += (int)((array.get(a).charAt(0)) - '0');
+				}
+				if(array == dealerHand) {
+					dealerValue += (int)((array.get(a).charAt(0)) - '0');
+				}
+			}
+			else if (array.get(a).charAt(0) == 'k' || array.get(a).charAt(0) == 'q' || array.get(a).charAt(0) == 'j'|| array.get(a).charAt(0) == '1') {
+				if (array == playerHand) {
+					playerValue += 10;
+				}
+				if (array == dealerHand) {
+					dealerValue += 10;
+				}
+			}
+			else if (array.get(a).charAt(0) == a) {//If you have ace checks whether it is worth 11 or 1 depending on busting on 11.
+				if (array == dealerHand) {
+					if ((dealerValue + 11) > 21) {
+						dealerValue += 1;
+					}
+					else {
+						dealerValue += 11;
+					}
+				}
+				if (array == playerHand) {
+					if ((playerValue + 11) > 21) {
+						playerValue += 1;
+					}
+					else {
+						playerValue += 11;
+					}
+				}
+			}
+		}
+		
+	}
+	
+	private void checkBlackjack() {
+		if (playerValue == 21 && dealerValue < playerValue) {
+			playerWins++;
+			System.out.println("The Player got BlackJack");
+			blackJack = true;
+		}
+		else if (dealerValue == 21 && dealerValue > playerValue) {
+			dealerWins++;
+			System.out.println("The Dealer got BlackJack");
+			blackJack = true;
+		}
+		else if (dealerValue == 21 && playerValue == 21) {
+			System.out.println("Both the Dealer and Player got Blackjack and its a Tie!");
+			blackJack = true;
+		}
+	}
+	
+	private void checkWin() {
+		if (playerValue > 21) {//if player busts
+			dealerWins++;
+			System.out.println("The Dealer Won!");
+		}
+		else if (dealerValue > 21) {//if dealer busts and player hasn't
+			playerWins++;
+			System.out.println("The Player Won!");
+		}
+		else if (playerValue > dealerValue && playerTurn == false) {//if player is above dealer and neither has busted 
+			playerWins++;
+			System.out.println("The Player Won!");
+		}
+		else if (playerValue < dealerValue && playerTurn == false) {//if dealer is above player and neither has busted
+			dealerWins++;
+			System.out.println("The Dealer Won!");
+		}
+		else if (dealerValue == playerValue && playerTurn == false) {//if dealer and player are equal
+			System.out.println("It was a tie!");
+		}
+	}
+	
+	private void printWins() {
+		System.out.println("Dealer Wins: " + dealerWins);
+		System.out.println("Player Wins: " + playerWins);
+	}
+	
+	private void reset() {
+		playerHand.clear();
+		dealerHand.clear();
+		playerValue = 0;
+		dealerValue = 0;
+		dealerCards.clear();
+		wordCards.clear();
+		blackJack = false;
+		Deal();
 	}
 	
 	public ArrayList toWords(ArrayList<String> Cards) {
@@ -114,53 +233,12 @@ public class Main extends Deck{
 			card = Value + " of " + Suite;
 			wordCards.add(card);
 		}
-		return wordCards;
-	}
-	private void checkBlackjack() {
-		if (playerValue == 21 && dealerValue < playerValue) {
-			playerWins++;
-			System.out.println("The Player got BlackJack");
-			//reset
-		}
-		else if (dealerValue == 21 && dealerValue > playerValue) {
-			dealerWins++;
-			System.out.println("The Dealer got BlackJack");
-			//reset
-		}
-		else if (dealerValue == 21 && playerValue == 21) {
-			System.out.println("Both the Dealer and Player got Blackjack and its a Tie!");
-			//reset
-		}
-	}
-	private void checkWin() {
-		if (playerValue > 21) {//if player busts
-			dealerWins++;
-			System.out.println("The Dealer Won!");
-			//reset
-		}
-		else if (dealerValue > 21) {//if dealer busts and player hasn't
-			playerWins++;
-			System.out.println("The Player Won!");
-			//reset
-		}
-		else if (playerValue > dealerValue) {//if player is above dealer and neither has busted 
-			playerWins++;
-			System.out.println("The Player Won!");
-			//reset
-		}
-		else if (playerValue < dealerValue) {//if dealer is above player and neither has busted
-			dealerWins++;
-			System.out.println("The Dealer Won!");
-			//reset
-		}
-		else if (dealerValue == playerValue) {
-			System.out.println("It was a tie!");
-			//reset
-		}
-	}
-	private void printWins() {
-		System.out.println("Dealer Wins: " + dealerWins);
-		System.out.println("Player Wins: " + playerWins);
+		//if (Cards == dealerHand && playerTurn ==true) {
+			//dealerCards.add(wordCards.get(0));
+			//return dealerCards;
+		//} else {
+			return wordCards;
+		//}
 	}
 
 }
