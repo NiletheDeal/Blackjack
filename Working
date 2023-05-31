@@ -1,4 +1,4 @@
-package BlackJack;
+package Blackjack;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -16,7 +16,7 @@ public class Main extends Deck{
 	int dealerValue = 0;
 	int playerWins = 0;
 	int dealerWins = 0;
-	boolean blackJack = false;
+	boolean playerLose = false;
 	Deck theDeck = new Deck();
 	
 	public static void main(String[] args) {
@@ -60,8 +60,18 @@ public class Main extends Deck{
 			String input = sc.nextLine();
 			if (input.equals("hit")) {
 				playerHand.add(theDeck.getCard());
-				getTotal(playerHand);
 				checkWin();
+				System.out.println("Your cards: " + toWords(playerHand));
+				getTotal(playerHand);
+				System.out.println(playerValue);
+				if (playerLose = true) {
+					System.out.println("Do you want to play again? (y or n)");
+					String again1 = sc.nextLine();
+						if (again1.equals("n")) {
+							playing = false;
+						}
+					reset();
+				}
 			}
 			else if(input.equals("stand")) {
 				playerTurn = false;
@@ -70,8 +80,8 @@ public class Main extends Deck{
 				System.out.println(dealerValue);
 				checkWin();
 				System.out.println("Do you want to play again? (y or n)");
-				String again1 = sc.nextLine();
-				if (again1.equals("n")) {
+				String again2 = sc.nextLine();
+				if (again2.equals("n")) {
 					playing = false;
 				}
 				reset();
@@ -86,8 +96,9 @@ public class Main extends Deck{
 
 	private void dealerPlay() {
 		Boolean dealerTurn = true;
+		getTotal(dealerHand);
 		while (dealerTurn == true) {
-			if (dealerValue <= 16) {
+			if (dealerValue < 17) {
 			dealerHand.add(theDeck.getCard());
 			getTotal(dealerHand);
 			} else {
@@ -139,25 +150,30 @@ public class Main extends Deck{
 	}
 	
 	private void checkBlackjack() {
+		getTotal(playerHand);
+		getTotal(dealerHand);
 		if (playerValue == 21 && dealerValue < playerValue) {
 			playerWins++;
 			System.out.println("The Player got BlackJack");
-			blackJack = true;
+
 		}
 		else if (dealerValue == 21 && dealerValue > playerValue) {
 			dealerWins++;
 			System.out.println("The Dealer got BlackJack");
-			blackJack = true;
+
 		}
 		else if (dealerValue == 21 && playerValue == 21) {
 			System.out.println("Both the Dealer and Player got Blackjack and its a Tie!");
-			blackJack = true;
+
 		}
 	}
 	
 	private void checkWin() {
+		getTotal(playerHand);
+		getTotal(dealerHand);
 		if (playerValue > 21) {//if player busts
 			dealerWins++;
+			playerLose = true;
 			System.out.println("The Dealer Won!");
 		}
 		else if (dealerValue > 21) {//if dealer busts and player hasn't
@@ -170,6 +186,7 @@ public class Main extends Deck{
 		}
 		else if (playerValue < dealerValue && playerTurn == false) {//if dealer is above player and neither has busted
 			dealerWins++;
+			playerLose = true;
 			System.out.println("The Dealer Won!");
 		}
 		else if (dealerValue == playerValue && playerTurn == false) {//if dealer and player are equal
@@ -189,7 +206,7 @@ public class Main extends Deck{
 		dealerValue = 0;
 		dealerCards.clear();
 		wordCards.clear();
-		blackJack = false;
+		playerLose = false;
 		Deal();
 	}
 	
