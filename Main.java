@@ -69,7 +69,6 @@ public class Main extends Deck{
 					wordCards.clear();
 					getTotal(playerHand);
 					playerTurn = true;
-					System.out.println("Your hand is worht " + playerValue);
 					checkWin();
 				}
 				else if(input.equals("stand")) {//Shifts turn from player to Dealer
